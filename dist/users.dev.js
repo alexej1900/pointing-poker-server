@@ -49,7 +49,7 @@ var addUser = function addUser(id, room, user) {
 
 var getUser = function getUser(id) {
   var user = users.find(function (user) {
-    return user.id == id;
+    return user.id === id;
   });
   return user;
 };

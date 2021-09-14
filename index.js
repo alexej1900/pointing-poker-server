@@ -4,6 +4,7 @@ const io = require('socket.io')(http);
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 const { addUser, getUser, deleteUser, getUsers } = require('./users');
+const { addIssue, getIssue, deleteIssue, getIssues, updateIssues } = require('./issues');
 
 app.use(cors());
 
@@ -17,6 +18,20 @@ io.on('connection', (socket) => {
       description: `${member.fullName} just entered the room`,
     });
     io.in(room).emit('users', getUsers(room));
+    io.in(room).emit('issues', getIssues(room));
+    callback();
+  });
+
+  socket.on('addIssue', ({ currentIssue, room }, callback) => {
+    const { issueItem, error } = addIssue(currentIssue, room);
+    if (error) return callback(error);
+    io.in(room).emit('issues', getIssues(room));
+    callback();
+  })
+
+  socket.on('updateIssues', ({ currentIssue, room }, callback) => {
+    updateIssues(currentIssue, room);
+    io.in(room).emit('issues', getIssues(room));
     callback();
   })
 
@@ -24,6 +39,13 @@ io.on('connection', (socket) => {
     //     const user = getUser(socket.id)
     //     io.in(user.room).emit('message', { user: user.fullName, text: message });
     // })
+
+  socket.on("deleteIssue", (id) => {
+    const issue = deleteIssue(id);
+    if (issue) {
+      io.in(issue.room).emit('issues', getIssues(issue.room));
+    };
+  });
 
   socket.on("deleteUser", (id) => {
     console.log("User disconnected");
