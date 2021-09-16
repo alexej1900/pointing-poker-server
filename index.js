@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
 
 
   socket.on('addIssue', ({ currentIssue, room }, callback) => {
-    const { issueItem, error } = addIssue(currentIssue, room);
+    const { error } = addIssue(currentIssue, room);
     if (error) return callback(error);
     io.in(room).emit('issues', getIssues(room));
     callback();

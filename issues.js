@@ -22,13 +22,12 @@ let issues = [
   },
 ];
 
-const addIssue = (issue, room) => {
-  const existingIssue = issues.find(issuei => issuei.name === issue.name);
+const addIssue = (currentIssue, room) => {
+  const existingIssue = issues.find(issuei => issuei.id === currentIssue.id);
 
   if (existingIssue) return { error: "Issue has already been taken" };
-  if (!issue) return { error: "Issue are required" };
-
-  const issueItem = { room, ...issue };
+  if (!currentIssue) return { error: "Issue are required" };
+  const issueItem = { room, ...currentIssue };
   issues.push(issueItem);
   return { issueItem };
 }
