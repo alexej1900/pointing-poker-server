@@ -1,26 +1,23 @@
-const rooms = []
+const rooms = [];
 
-const addRoom = (id, room) => {
-    const existingRoom = rooms.find(roomi => roomi.id.trim().toLowerCase() === room.id.trim().toLowerCase())
-
-    if (existingRoom) return { error: "Room has already been taken" }
-    if (!room) return { error: "Room are required" }
-
-    const roomItem = { id, room }
-    rooms.push(roomItem)
-    return { roomItem }
-}
+const addRoom = (currentRoom) => {
+    const existingRoom = rooms.find(roomItem => roomItem === currentRoom);
+    if (existingRoom) return { error: "Room has already been taken" };
+    if (!currentRoom) return { error: "Room are required" };
+    rooms.push(currentRoom);
+    return { currentRoom };
+};
 
 const getRoom = id => {
-    let room = rooms.find(room => room.id == id)
-    return room
-}
+    let room = rooms.find(room => room.id == id);
+    return room;
+};
 
 const deleteRoom = (id) => {
     const index = rooms.findIndex((room) => room.id === id);
     if (index !== -1) return rooms.splice(index, 1)[0];
-}
+};
 
-const getRooms = () => rooms
+const getRooms = () => rooms;
 
-module.exports = { addRoom, getRoom, deleteRoom, getRooms }
+module.exports = { addRoom, getRoom, deleteRoom, getRooms };
