@@ -24,17 +24,21 @@ var _require2 = require('./rooms'),
     deleteRoom = _require2.deleteRoom,
     getRooms = _require2.getRooms;
 
-var _require3 = require('./issues'),
-    addIssue = _require3.addIssue,
-    getIssue = _require3.getIssue,
-    deleteIssue = _require3.deleteIssue,
-    getIssues = _require3.getIssues,
-    updateIssues = _require3.updateIssues;
+var _require3 = require('./settings'),
+    addSettings = _require3.addSettings,
+    setSettings = _require3.setSettings,
+    getSettings = _require3.getSettings;
 
-var _require4 = require('./settings'),
-    addSettings = _require4.addSettings,
-    setSettings = _require4.setSettings,
-    getSettings = _require4.getSettings;
+var _require4 = require('./issues'),
+    addIssue = _require4.addIssue,
+    getIssue = _require4.getIssue,
+    deleteIssue = _require4.deleteIssue,
+    getIssues = _require4.getIssues,
+    updateIssues = _require4.updateIssues;
+
+var _require5 = require('./timer'),
+    getTimer = _require5.getTimer,
+    addTimer = _require5.addTimer;
 
 app.use(cors());
 io.on('connection', function (socket) {
@@ -78,9 +82,15 @@ io.on('connection', function (socket) {
     io["in"](room).emit('issues', getIssues(room));
     callback();
   });
-  socket.on('updateIssues', function (_ref4, callback) {
-    var currentIssue = _ref4.currentIssue,
+  socket.on('addTimer', function (_ref4) {
+    var currentCount = _ref4.currentCount,
         room = _ref4.room;
+    addTimer(currentCount, room);
+    io["in"](room).emit('timers', getTimer(room));
+  });
+  socket.on('updateIssues', function (_ref5, callback) {
+    var currentIssue = _ref5.currentIssue,
+        room = _ref5.room;
     updateIssues(currentIssue, room);
     io["in"](room).emit('issues', getIssues(room));
     callback();
@@ -91,8 +101,6 @@ io.on('connection', function (socket) {
     if (issue) {
       io["in"](issue.room).emit('issues', getIssues(issue.room));
     }
-
-    ;
   });
   socket.on('deleteUser', function (id) {
     var user = deleteUser(id);
@@ -105,8 +113,8 @@ io.on('connection', function (socket) {
     ;
     console.log('User disconnected');
   });
-  socket.on('addSettingsRoom', function (_ref5, callback) {
-    var room = _ref5.room;
+  socket.on('addSettingsRoom', function (_ref6, callback) {
+    var room = _ref6.room;
 
     var _addSettings = addSettings(room),
         error = _addSettings.error;
@@ -115,11 +123,13 @@ io.on('connection', function (socket) {
     io["in"](room).emit('getSettings', getSettings(room));
     callback();
   });
-  socket.on('setSettings', function (_ref6) {
-    var currentSettings = _ref6.currentSettings;
+  socket.on('setSettings', function (_ref7) {
+    var currentSettings = _ref7.currentSettings;
     var settings = setSettings(currentSettings);
     io["in"](settings.room).emit('getSettings', getSettings(settings.room));
-  });
+  }); // socket.on('changeLink', ({ link, room }) => {
+  //   io.in(room).emit('link', changeLink('/game-member', room));
+  // });
 });
 app.get('/', function (req, res) {
   res.send('Server is up and running');
