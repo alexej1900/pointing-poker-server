@@ -9,7 +9,12 @@ const addTimer = (currentCount, room) => {
 
 const getTimer = (room) => {
   let timer = timers.find((timer) => timer.room === room);
-  return timer;
+  if (timer) {
+    return timer;
+  } else {
+    timer = { currentCount: 0 };
+    return timer;
+  }
 };
 
 module.exports = { addTimer, getTimer };

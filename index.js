@@ -52,7 +52,6 @@ io.on('connection', (socket) => {
   socket.on('addTimer', ({ currentCount, room }) => {
     addTimer(currentCount, room);
     io.in(room).emit('timers', getTimer(room));
-    console.log(currentCount, 'addCount');
   });
 
   socket.on('updateIssues', ({ currentIssue, room }, callback) => {
@@ -80,6 +79,10 @@ io.on('connection', (socket) => {
     }
     console.log('User disconnected');
   });
+
+  // socket.on('changeLink', ({ link, room }) => {
+  //   io.in(room).emit('link', changeLink('/game-member', room));
+  // });
 });
 
 app.get('/', (req, res) => {
