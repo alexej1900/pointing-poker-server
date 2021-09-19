@@ -1,32 +1,8 @@
-let issues = [
-  {
-    room: 10,
-    id: '1',
-    name: 'issue 12',
-    link: ' http://jira.my-company.com/issue-12',
-    priority: 'middle',
-  },
-  {
-    room: 10,
-    id: '2',
-    name: 'issue 13',
-    link: ' http://jira.my-company.com/issue-13',
-    priority: 'low'
-  },
-  {
-    room: 10,
-    id: '3',
-    name: 'issue 14',
-    link: ' http://jira.my-company.com/issue-14',
-    priority: 'height'
-  },
-];
+let issues = [];
 
 const addIssue = (currentIssue, room) => {
   const existingIssue = issues.find(issuei => issuei.id === currentIssue.id);
-
-  if (existingIssue) return { error: "Issue has already been taken" };
-  if (!currentIssue) return { error: "Issue are required" };
+  if (existingIssue) return { error: 'Issue has already been taken' };
   const issueItem = { room, ...currentIssue };
   issues.push(issueItem);
   return { issueItem };
@@ -37,11 +13,11 @@ const updateIssues = (currentIssue, room) => {
     return issue.id === currentIssue.id 
       ? { room, ...currentIssue }
       : issue
-  })
+  });
 }
 
 const getIssue = id => {
-  let issue = issues.find(issue => issue.id === id)
+  let issue = issues.find(issue => issue.id === id);
   return issue;
 }
 
