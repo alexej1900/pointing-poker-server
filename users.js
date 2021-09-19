@@ -1,25 +1,12 @@
-const users = [
-  {
-    id: '',
-    room: 10,
-    firstName: 'David',
-    lastName: 'Blane',
-    jobPosition: "senior software engineer",
-    fullName: "David Blane",
-    imageSrc: '',
-    idd: '1321242354325',
-    isObserver: false,
-    isMaster: false,
-  },
-];
+const users = [];
 
 const addUser = (id, room, user) => {
   const existingUser = users.find(useri => useri.idd.trim().toLowerCase() === user.idd.trim().toLowerCase());
 
-  if (existingUser) return { error: "Username has already been taken" };
-  if (!user && !room) return { error: "Username and room are required" };
-  if (!user.fullName) return { error: "Username is required" };
-  if (!room) return { error: "Room is required" };
+  if (existingUser) return { error: 'Username has already been taken' };
+  if (!user && !room) return { error: 'Username and room are required' };
+  if (!user.fullName) return { error: 'Username is required' };
+  if (!room) return { error: 'Room is required' };
 
   const member = { id, room, ...user };
   users.push(member);

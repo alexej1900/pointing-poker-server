@@ -2,13 +2,13 @@ const rooms = [];
 
 const addRoom = (currentRoom) => {
     const existingRoom = rooms.find(roomItem => roomItem === currentRoom);
-    if (existingRoom) return { error: "Room has already been taken" };
-    if (!currentRoom) return { error: "Room are required" };
+    if (existingRoom) return { error: 'Room has already been taken' };
+    if (!currentRoom) return { error: 'Room are required' };
     rooms.push(currentRoom);
     return { currentRoom };
 };
 
-const getRoom = id => {
+const getRoom = (id) => {
     let room = rooms.find(room => room.id == id);
     return room;
 };
