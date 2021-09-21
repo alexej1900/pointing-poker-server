@@ -86,6 +86,15 @@ io.on('connection', (socket) => {
     io.in(settings.room).emit('getSettings', getSettings(settings.room));
   });
 
+  socket.on('leaveSession', (id) => {
+    const deletedUser = getUser(id);
+    const user = deleteUser(deletedUser.idd);
+    if (user) {
+      socket.in(user.room).emit('users', getUsers(user.room));
+    };
+    console.log('User disconnected');
+  });
+
   // socket.on('changeLink', ({ link, room }) => {
   //   io.in(room).emit('link', changeLink('/game-member', room));
   // });
