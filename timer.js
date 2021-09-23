@@ -1,4 +1,5 @@
 const timers = [];
+let timersStatus = [];
 
 const addTimer = (currentCount, room) => {
   if (!currentCount) return { error: 'Issue are required' };
@@ -17,4 +18,20 @@ const getTimer = (room) => {
   }
 };
 
-module.exports = { addTimer, getTimer };
+const addTimerStatus = (currentStatus, room) => {
+  const status = { room: room, currentStatus: currentStatus };
+  timersStatus = [];
+  timersStatus.push(status);
+  return { status };
+};
+const getTimerStatus = (room) => {
+  let timerStatus = timersStatus.find((timer) => timer.room === room);
+  if (timerStatus) {
+    return timerStatus;
+  } else {
+    timerStatus = { currentStatus: false };
+    return timerStatus;
+  }
+};
+
+module.exports = { addTimer, getTimer, addTimerStatus, getTimerStatus };

@@ -6,7 +6,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 5000;
 const { addUser, getUser, deleteUser, getUsers } = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
-const { addSettings, setSettings, getSettings} = require('./settings');
+const { addSettings, setSettings, getSettings } = require('./settings');
 const {
   addIssue,
   getIssue,
@@ -14,7 +14,12 @@ const {
   getIssues,
   updateIssues
 } = require('./issues');
-const { getTimer, addTimer } = require('./timer');
+const {
+  getTimer,
+  addTimer,
+  addTimerStatus,
+  getTimerStatus
+} = require('./timer');
 
 app.use(cors());
 
@@ -70,18 +75,18 @@ io.on('connection', (socket) => {
     if (user) {
       io.in(user.room).emit('users', getUsers(user.room));
       io.to(user.id).emit('userIsDeleted');
-    };
+    }
     console.log('User disconnected');
   });
 
-  socket.on('addSettingsRoom', ({room}, callback) => {
-    const {error} = addSettings(room);
+  socket.on('addSettingsRoom', ({ room }, callback) => {
+    const { error } = addSettings(room);
     if (error) return callback(error);
     io.in(room).emit('getSettings', getSettings(room));
     callback();
   });
 
-  socket.on('setSettings', ({currentSettings}) => {
+  socket.on('setSettings', ({ currentSettings }) => {
     const settings = setSettings(currentSettings);
     io.in(settings.room).emit('getSettings', getSettings(settings.room));
   });
@@ -91,8 +96,17 @@ io.on('connection', (socket) => {
     const user = deleteUser(deletedUser.idd);
     if (user) {
       socket.in(user.room).emit('users', getUsers(user.room));
-    };
+    }
     console.log('User disconnected');
+  });
+
+  socket.on('changePage', ({ link, room }) => {
+    socket.in(room).emit('link');
+  });
+
+  socket.on('setTimerStatus', (status, room) => {
+    addTimerStatus(status, room);
+    io.in(room).emit('getTimerStatus', getTimerStatus(room));
   });
 
   // socket.on('changeLink', ({ link, room }) => {
