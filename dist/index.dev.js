@@ -10,13 +10,14 @@ var io = require('socket.io')(http);
 
 var cors = require('cors');
 
-var PORT = process.env.PORT || 5000;
+var PORT = process.env.PORT || 4000;
 
 var _require = require('./users'),
     addUser = _require.addUser,
     getUser = _require.getUser,
     deleteUser = _require.deleteUser,
-    getUsers = _require.getUsers;
+    getUsers = _require.getUsers,
+    addDeleteUser = _require.addDeleteUser;
 
 var _require2 = require('./rooms'),
     addRoom = _require2.addRoom,
@@ -138,9 +139,56 @@ io.on('connection', function (socket) {
 
     ;
     console.log('User disconnected');
-  }); // socket.on('changeLink', ({ link, room }) => {
-  //   io.in(room).emit('link', changeLink('/game-member', room));
-  // });
+  });
+  socket.on('voting', function (_ref8) {
+    var deletedUser = _ref8.deletedUser,
+        kickerId = _ref8.kickerId,
+        vote = _ref8.vote,
+        voteSet = _ref8.voteSet;
+    var membersCount = getUsers(deletedUser.room).length;
+    var deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
+    console.log('membersCount', membersCount);
+    console.log('kickers.length', deletedMember.kickers.length);
+
+    if (membersCount <= deletedMember.kickers.length) {
+      var yes = 0;
+      var no = 0;
+      deletedMember.kickers.forEach(function (item) {
+        item.vote ? yes++ : no++;
+      });
+      console.log('yes', yes);
+      console.log('no', no);
+
+      if (yes > no) {
+        var user = deleteUser(deletedUser.idd);
+
+        if (user) {
+          io["in"](user.room).emit('users', getUsers(user.room));
+          io.to(user.id).emit('userIsDeleted');
+        }
+
+        ;
+        console.log('User disconnected');
+      }
+    }
+  });
+  socket.on('kickUser', function (_ref9) {
+    var id = _ref9.id,
+        kickerId = _ref9.kickerId,
+        voteSet = _ref9.voteSet;
+    var deletedUser = getUser(id);
+    var kicker = getUser(kickerId);
+
+    if (deletedUser && kicker) {
+      io["in"](kicker.room).emit('willPlayerKick', {
+        deletedUser: deletedUser,
+        kicker: kicker,
+        voteSet: voteSet
+      });
+    }
+
+    ;
+  });
 });
 app.get('/', function (req, res) {
   res.send('Server is up and running');
