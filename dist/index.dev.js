@@ -111,7 +111,6 @@ io.on('connection', function (socket) {
       io.to(user.id).emit('userIsDeleted');
     }
 
-    ;
     console.log('User disconnected');
   });
   socket.on('addSettingsRoom', function (_ref6, callback) {
@@ -186,6 +185,14 @@ io.on('connection', function (socket) {
     }
 
     ;
+  });
+  socket.on('sendMessage', function (message) {
+    var user = getUser(socket.id);
+    console.log('user: ' + user.fullName);
+    io["in"](user.room).emit('message', {
+      user: user.fullName,
+      text: message
+    });
   });
 });
 app.get('/', function (req, res) {

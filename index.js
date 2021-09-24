@@ -6,13 +6,13 @@ const cors = require('cors');
 const PORT = process.env.PORT || 4000;
 const { addUser, getUser, deleteUser, getUsers, addDeleteUser } = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
-const { addSettings, setSettings, getSettings} = require('./settings');
+const { addSettings, setSettings, getSettings } = require('./settings');
 const {
   addIssue,
   getIssue,
   deleteIssue,
   getIssues,
-  updateIssues
+  updateIssues,
 } = require('./issues');
 const { getTimer, addTimer } = require('./timer');
 
@@ -70,18 +70,18 @@ io.on('connection', (socket) => {
     if (user) {
       io.in(user.room).emit('users', getUsers(user.room));
       io.to(user.id).emit('userIsDeleted');
-    };
+    }
     console.log('User disconnected');
   });
 
-  socket.on('addSettingsRoom', ({room}, callback) => {
-    const {error} = addSettings(room);
+  socket.on('addSettingsRoom', ({ room }, callback) => {
+    const { error } = addSettings(room);
     if (error) return callback(error);
     io.in(room).emit('getSettings', getSettings(room));
     callback();
   });
 
-  socket.on('setSettings', ({currentSettings}) => {
+  socket.on('setSettings', ({ currentSettings }) => {
     const settings = setSettings(currentSettings);
     io.in(settings.room).emit('getSettings', getSettings(settings.room));
   });
@@ -123,6 +123,11 @@ io.on('connection', (socket) => {
     if (deletedUser && kicker) {
       io.in(kicker.room).emit('willPlayerKick', {deletedUser, kicker, voteSet});
     };
+  });
+  socket.on('sendMessage', (message) => {
+    const user = getUser(socket.id);
+    console.log('user: ' + user.fullName);
+    io.in(user.room).emit('message', { user: user.fullName, text: message });
   });
 });
 
