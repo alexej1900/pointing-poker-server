@@ -98,16 +98,12 @@ io.on('connection', (socket) => {
   socket.on('voting', ({ deletedUser, kickerId, vote, voteSet }) => {
     const membersCount =  getUsers(deletedUser.room).length;
     const deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
-    console.log('membersCount', membersCount);
-    console.log('kickers.length', deletedMember.kickers.length);
     if ((membersCount) <= deletedMember.kickers.length) {
       let yes = 0;
       let no = 0;
       deletedMember.kickers.forEach((item) => {
         item.vote ? yes++ : no++;
       })
-      console.log('yes', yes);
-      console.log('no', no);
       if (yes > no) {
         const user = deleteUser(deletedUser.idd);
         if (user) {
@@ -115,7 +111,9 @@ io.on('connection', (socket) => {
           io.to(user.id).emit('userIsDeleted');
         };
         console.log('User disconnected');
-      }
+      } else {
+        console.log('User stayed in session');
+        }
     }
   });
 

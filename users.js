@@ -43,7 +43,7 @@ const addDeleteUser = (deletedUser, kickerId, vote, voteSet) => {
       } else {
         return user;
       }
-    })  
+    });  
   }
   if (!deletedUsersArray.find(
     element => 
@@ -52,7 +52,6 @@ const addDeleteUser = (deletedUser, kickerId, vote, voteSet) => {
     const deletedMember = { id: deletedUser.id, voteSet: voteSet, kickers: [{kickerId, vote}] };
     deletedUsersArray.push(deletedMember);
   };
-  console.log('deletedUsersArray', deletedUsersArray);
 
   return deletedUsersArray.filter((item)=> item.id === deletedUser.id && item.voteSet === voteSet)[0];
 };

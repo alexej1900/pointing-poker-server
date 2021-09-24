@@ -147,8 +147,6 @@ io.on('connection', function (socket) {
         voteSet = _ref8.voteSet;
     var membersCount = getUsers(deletedUser.room).length;
     var deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
-    console.log('membersCount', membersCount);
-    console.log('kickers.length', deletedMember.kickers.length);
 
     if (membersCount <= deletedMember.kickers.length) {
       var yes = 0;
@@ -156,8 +154,6 @@ io.on('connection', function (socket) {
       deletedMember.kickers.forEach(function (item) {
         item.vote ? yes++ : no++;
       });
-      console.log('yes', yes);
-      console.log('no', no);
 
       if (yes > no) {
         var user = deleteUser(deletedUser.idd);
@@ -169,6 +165,8 @@ io.on('connection', function (socket) {
 
         ;
         console.log('User disconnected');
+      } else {
+        console.log('User stayed in session');
       }
     }
   });

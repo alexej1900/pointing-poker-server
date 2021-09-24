@@ -97,7 +97,6 @@ var addDeleteUser = function addDeleteUser(deletedUser, kickerId, vote, voteSet)
   }
 
   ;
-  console.log('deletedUsersArray', deletedUsersArray);
   return deletedUsersArray.filter(function (item) {
     return item.id === deletedUser.id && item.voteSet === voteSet;
   })[0];
