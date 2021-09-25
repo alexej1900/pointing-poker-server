@@ -4,7 +4,13 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
-const { addUser, getUser, deleteUser, getUsers } = require('./users');
+const {
+  addUser,
+  getUser,
+  deleteUser,
+  getUsers,
+  addDeleteUser
+} = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
 const { addSettings, setSettings, getSettings } = require('./settings');
 const {
@@ -91,6 +97,10 @@ io.on('connection', (socket) => {
     io.in(settings.room).emit('getSettings', getSettings(settings.room));
   });
 
+  socket.on('getCurrentSettings', (room) => {
+    io.in(room).emit('getSettings', getSettings(room));
+  });
+
   socket.on('leaveSession', (id) => {
     const deletedUser = getUser(id);
     const user = deleteUser(deletedUser.idd);
@@ -112,6 +122,45 @@ io.on('connection', (socket) => {
   // socket.on('changeLink', ({ link, room }) => {
   //   io.in(room).emit('link', changeLink('/game-member', room));
   // });
+
+  socket.on('voting', ({ deletedUser, kickerId, vote, voteSet }) => {
+    const membersCount = getUsers(deletedUser.room).length;
+    const deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
+    if (membersCount <= deletedMember.kickers.length) {
+      let yes = 0;
+      let no = 0;
+      deletedMember.kickers.forEach((item) => {
+        item.vote ? yes++ : no++;
+      });
+      if (yes > no) {
+        const user = deleteUser(deletedUser.idd);
+        if (user) {
+          io.in(user.room).emit('users', getUsers(user.room));
+          io.to(user.id).emit('userIsDeleted');
+        }
+        console.log('User disconnected');
+      } else {
+        console.log('User stayed in session');
+      }
+    }
+  });
+
+  socket.on('kickUser', ({ id, kickerId, voteSet }) => {
+    const deletedUser = getUser(id);
+    const kicker = getUser(kickerId);
+    if (deletedUser && kicker) {
+      io.in(kicker.room).emit('willPlayerKick', {
+        deletedUser,
+        kicker,
+        voteSet
+      });
+    }
+  });
+  socket.on('sendMessage', (message) => {
+    const user = getUser(socket.id);
+    console.log('user: ' + user.fullName);
+    io.in(user.room).emit('message', { user: user.fullName, text: message });
+  });
 });
 
 app.get('/', (req, res) => {
