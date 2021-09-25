@@ -3,7 +3,7 @@ const path = require('path');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const cors = require('cors');
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 const { addUser, getUser, deleteUser, getUsers, addDeleteUser } = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
 const { addSettings, setSettings, getSettings } = require('./settings');
@@ -84,6 +84,10 @@ io.on('connection', (socket) => {
   socket.on('setSettings', ({ currentSettings }) => {
     const settings = setSettings(currentSettings);
     io.in(settings.room).emit('getSettings', getSettings(settings.room));
+  });
+
+  socket.on('getCurrentSettings', ( room ) => {
+    io.in(room).emit('getSettings', getSettings(room));
   });
 
   socket.on('leaveSession', (id) => {
