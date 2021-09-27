@@ -9,7 +9,8 @@ const {
   getUser,
   deleteUser,
   getUsers,
-  addDeleteUser
+  addDeleteUser,
+  editUser
 } = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
 const { addSettings, setSettings, getSettings } = require('./settings');
@@ -160,6 +161,18 @@ io.on('connection', (socket) => {
     const user = getUser(socket.id);
     console.log('user: ' + user.fullName);
     io.in(user.room).emit('message', { user: user.fullName, text: message });
+  });
+
+  socket.on('getUser', ({ room }) => {
+    const user = getUser(socket.id);
+    console.log(user, 'user');
+    io.in(room).emit('getCurrentUser', getUser(socket.id));
+  });
+
+  socket.on('editUser', ({ room, image }) => {
+    const user = editUser(socket.id, image);
+    io.in(room).emit('getNewUser', editUser(socket.id, image));
+    io.in(user.room).emit('users', getUsers(user.room));
   });
 });
 
