@@ -74,6 +74,14 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
+  socket.on('finishSession', ({room}, callback) => {
+    const { error } = deleteRoom(room);
+    if (error) return callback(error);
+    io.in(room).emit('endOfSession');
+    console.log('Session is finished');
+    callback();
+  });
+
   socket.on('addSettingsRoom', ({ room }, callback) => {
     const { error } = addSettings(room);
     if (error) return callback(error);
