@@ -4,9 +4,25 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
-const { addUser, getUser, deleteUser, getUsers, addDeleteUser } = require('./users');
-const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
-const { addSettings, setSettings, getSettings } = require('./settings');
+const { 
+  addUser, 
+  getUser, 
+  deleteUser, 
+  getUsers, 
+  addDeleteUser, 
+  deleteUsers 
+} = require('./users');
+const { 
+  addRoom, 
+  getRoom, 
+  deleteRoom, 
+  getRooms 
+} = require('./rooms');
+const { 
+  addSettings, 
+  setSettings, 
+  getSettings 
+} = require('./settings');
 const {
   addIssue,
   getIssue,
@@ -77,6 +93,7 @@ io.on('connection', (socket) => {
   socket.on('finishSession', ({room}, callback) => {
     const { error } = deleteRoom(room);
     if (error) return callback(error);
+    deleteUsers(room);
     io.in(room).emit('endOfSession');
     console.log('Session is finished');
     callback();

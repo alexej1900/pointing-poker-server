@@ -1,4 +1,4 @@
-const users = [];
+let users = [];
 let deletedUsersArray = [];
 
 const addUser = (id, room, user) => {
@@ -22,6 +22,10 @@ const getUser = id => {
 const deleteUser = (id) => {
   const index = users.findIndex((user) => user.idd === id);
   if (index !== -1) return users.splice(index, 1)[0];
+};
+
+const deleteUsers = (room) => {
+  users = users.filter((user) => user.room !== room);
 };
 
 const addDeleteUser = (deletedUser, kickerId, vote, voteSet) => {
@@ -58,4 +62,4 @@ const addDeleteUser = (deletedUser, kickerId, vote, voteSet) => {
 
 const getUsers = (room) => users.filter(user => user.room === room);
 
-module.exports = { addUser, getUser, deleteUser, getUsers, addDeleteUser };
+module.exports = { addUser, getUser, deleteUser, getUsers, addDeleteUser, deleteUsers };
