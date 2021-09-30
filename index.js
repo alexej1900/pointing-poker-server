@@ -120,10 +120,6 @@ io.on('connection', (socket) => {
     io.in(room).emit('getTimerStatus', getTimerStatus(room));
   });
 
-  // socket.on('changeLink', ({ link, room }) => {
-  //   io.in(room).emit('link', changeLink('/game-member', room));
-  // });
-
   socket.on('voting', ({ deletedUser, kickerId, vote, voteSet }) => {
     const membersCount = getUsers(deletedUser.room).length;
     const deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
@@ -165,13 +161,11 @@ io.on('connection', (socket) => {
 
   socket.on('getUser', ({ room }) => {
     const user = getUser(socket.id);
-    console.log(user, 'user');
     io.in(room).emit('getCurrentUser', getUser(socket.id));
   });
 
   socket.on('editUser', ({ room, image }) => {
     const user = editUser(socket.id, image);
-    io.in(room).emit('getNewUser', editUser(socket.id, image));
     io.in(user.room).emit('users', getUsers(user.room));
   });
 });
