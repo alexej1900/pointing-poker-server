@@ -120,6 +120,10 @@ io.on('connection', (socket) => {
     io.in(room).emit('getTimerStatus', getTimerStatus(room));
   });
 
+  socket.on('setRestart', (status, room) => {
+    io.in(room).emit('restarted', status);
+  });
+
   socket.on('voting', ({ deletedUser, kickerId, vote, voteSet }) => {
     const membersCount = getUsers(deletedUser.room).length;
     const deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
