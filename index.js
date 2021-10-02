@@ -4,33 +4,32 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const cors = require('cors');
 const PORT = process.env.PORT || 5000;
-const { 
-  addUser, 
-  getUser, 
-  deleteUser, 
-  getUsers, 
-  addDeleteUser, 
-  deleteUsers 
+
+const {
+  addUser,
+  getUser,
+  deleteUser,
+  getUsers,
+  addDeleteUser,
+  editUser,
+  deleteUsers
 } = require('./users');
-const { 
-  addRoom, 
-  getRoom, 
-  deleteRoom, 
-  getRooms 
-} = require('./rooms');
-const { 
-  addSettings, 
-  setSettings, 
-  getSettings 
-} = require('./settings');
+const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
+const { addSettings, setSettings, getSettings } = require('./settings');
+
 const {
   addIssue,
   getIssue,
   deleteIssue,
   getIssues,
-  updateIssues,
+  updateIssues
 } = require('./issues');
-const { getTimer, addTimer } = require('./timer');
+const {
+  getTimer,
+  addTimer,
+  addTimerStatus,
+  getTimerStatus
+} = require('./timer');
 
 app.use(cors());
 
@@ -90,7 +89,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
-  socket.on('finishSession', ({room}, callback) => {
+  socket.on('finishSession', ({ room }, callback) => {
     const { error } = deleteRoom(room);
     if (error) return callback(error);
     deleteUsers(room);
@@ -111,7 +110,7 @@ io.on('connection', (socket) => {
     io.in(settings.room).emit('getSettings', getSettings(settings.room));
   });
 
-  socket.on('getCurrentSettings', ( room ) => {
+  socket.on('getCurrentSettings', (room) => {
     io.in(room).emit('getSettings', getSettings(room));
   });
 
@@ -120,29 +119,42 @@ io.on('connection', (socket) => {
     const user = deleteUser(deletedUser.idd);
     if (user) {
       socket.in(user.room).emit('users', getUsers(user.room));
-    };
+    }
     console.log('User disconnected');
   });
 
+  socket.on('changePage', ({ link, room }) => {
+    socket.in(room).emit('link');
+  });
+
+  socket.on('setTimerStatus', (status, room) => {
+    addTimerStatus(status, room);
+    io.in(room).emit('getTimerStatus', getTimerStatus(room));
+  });
+
+  socket.on('setRestart', (status, room) => {
+    io.in(room).emit('restarted', status);
+  });
+
   socket.on('voting', ({ deletedUser, kickerId, vote, voteSet }) => {
-    const membersCount =  getUsers(deletedUser.room).length;
+    const membersCount = getUsers(deletedUser.room).length;
     const deletedMember = addDeleteUser(deletedUser, kickerId, vote, voteSet);
-    if ((membersCount) <= deletedMember.kickers.length) {
+    if (membersCount <= deletedMember.kickers.length) {
       let yes = 0;
       let no = 0;
       deletedMember.kickers.forEach((item) => {
         item.vote ? yes++ : no++;
-      })
+      });
       if (yes > no) {
         const user = deleteUser(deletedUser.idd);
         if (user) {
           io.in(user.room).emit('users', getUsers(user.room));
           io.to(user.id).emit('userIsDeleted');
-        };
+        }
         console.log('User disconnected');
       } else {
         console.log('User stayed in session');
-        }
+      }
     }
   });
 
@@ -150,13 +162,27 @@ io.on('connection', (socket) => {
     const deletedUser = getUser(id);
     const kicker = getUser(kickerId);
     if (deletedUser && kicker) {
-      io.in(kicker.room).emit('willPlayerKick', {deletedUser, kicker, voteSet});
-    };
+      io.in(kicker.room).emit('willPlayerKick', {
+        deletedUser,
+        kicker,
+        voteSet
+      });
+    }
   });
   socket.on('sendMessage', (message) => {
     const user = getUser(socket.id);
     console.log('user: ' + user.fullName);
     io.in(user.room).emit('message', { user: user.fullName, text: message });
+  });
+
+  socket.on('getUser', ({ room }) => {
+    const user = getUser(socket.id);
+    io.in(room).emit('getCurrentUser', getUser(socket.id));
+  });
+
+  socket.on('editUser', ({ room, image }) => {
+    const user = editUser(socket.id, image);
+    io.in(user.room).emit('users', getUsers(user.room));
   });
 });
 
