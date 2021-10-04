@@ -4,7 +4,8 @@ const initialSettings = {
   isTimer: false,
   scoreType: '',
   minutes: 0,
-  seconds: 0
+  seconds: 0,
+  isGame: false,
 };
 
 let settings = [];
@@ -27,7 +28,15 @@ const setSettings = (currentSettings) => {
   return currentSettings;
 };
 
+const setIsGameSetting = (room, isGame) => {
+  settings = settings.map((settingsItem) => {
+    return settingsItem.room === room
+      ? {...settingsItem, isGame: isGame}
+      : settingsItem;
+  });
+};
+
 const getSettings = (currentRoom) =>
   settings.filter((setting) => setting.room === currentRoom)[0];
 
-module.exports = { addSettings, setSettings, getSettings };
+module.exports = { addSettings, setSettings, getSettings, setIsGameSetting };
