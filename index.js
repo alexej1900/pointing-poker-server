@@ -15,7 +15,7 @@ const {
   deleteUsers
 } = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
-const { addSettings, setSettings, getSettings } = require('./settings');
+const { addSettings, setSettings, getSettings, setIsGameSetting } = require('./settings');
 
 const {
   addIssue,
@@ -120,6 +120,10 @@ io.on('connection', (socket) => {
     io.in(room).emit('getSettings', getSettings(room));
   });
 
+  socket.on('getCurrentMemberSettings', ({room, id}) => {
+    io.to(id).emit('getMemberSettings', getSettings(room));
+  });
+
   socket.on('leaveSession', (id) => {
     const deletedUser = getUser(id);
     const user = deleteUser(deletedUser.idd);
@@ -129,8 +133,9 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
-  socket.on('changePage', ({ link, room }) => {
-    socket.in(room).emit('link');
+  socket.on('changePage', ({ room, isGame }) => {
+    setIsGameSetting(room, isGame);
+    socket.in(room).emit('link', getSettings(room));
   });
 
   socket.on('watchStat', ({ room }) => {
