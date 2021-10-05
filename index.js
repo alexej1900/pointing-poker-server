@@ -73,6 +73,12 @@ io.on('connection', (socket) => {
     callback();
   });
 
+  socket.on('updateIssue', ({ issue, room }, callback) => {
+    updateIssues(issue, room);
+    io.in(room).emit('issues', getIssues(room));
+    callback();
+  });
+
   socket.on('deleteIssue', (id) => {
     const issue = deleteIssue(id);
     if (issue) {
@@ -136,6 +142,10 @@ io.on('connection', (socket) => {
     io.in(room).emit('endGame');
   });
 
+  socket.on('watchStat', ({ room }) => {
+    io.in(room).emit('endGame');
+  });
+
   socket.on('setTimerStatus', (status, room) => {
     addTimerStatus(status, room);
     io.in(room).emit('getTimerStatus', getTimerStatus(room));
@@ -191,6 +201,7 @@ io.on('connection', (socket) => {
 
   socket.on('editUser', ({ room, image }) => {
     const user = editUser(socket.id, image);
+    console.log(user);
     io.in(user.room).emit('users', getUsers(user.room));
   });
 });
