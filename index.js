@@ -154,6 +154,10 @@ io.on('connection', (socket) => {
     io.in(room).emit('endGame');
   });
 
+  socket.on('watchStat', ({ room }) => {
+    io.in(room).emit('endGame');
+  });
+
   socket.on('setTimerStatus', (status, room) => {
     addTimerStatus(status, room);
     io.in(room).emit('getTimerStatus', getTimerStatus(room));
