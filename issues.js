@@ -15,6 +15,21 @@ const updateIssues = (currentIssue, room) => {
   });
 };
 
+const addIssueStat = ({ finalArr, room, statCards }) => {
+  // console.log(Array(...finalArr));
+  // const currentIssues = getIssues(room);
+  const voteNumber = statCards.length;
+  issues.forEach((issue) => {
+    if (issue.isActive) {
+      issue.statistic = Array(...finalArr);
+      issue.votes = voteNumber;
+    } else {
+      issue = issue;
+    }
+  });
+  return issues;
+};
+
 const getIssue = (id) => {
   let issue = issues.find((issue) => issue.id === id);
   return issue;
@@ -23,16 +38,6 @@ const getIssue = (id) => {
 const deleteIssue = (id) => {
   const index = issues.findIndex((issue) => issue.id === id);
   if (index !== -1) return issues.splice(index, 1)[0];
-};
-
-const addIssueStat = ({ finalArr, room }) => {
-  // console.log(Array(...finalArr));
-  // const currentIssues = getIssues(room);
-  issues.forEach((issue) => {
-    issue.isActive ? (issue.statistic = Array(...finalArr)) : null;
-  });
-  console.log(issues);
-  return issues;
 };
 
 const getIssues = (room) => issues.filter((issue) => issue.room === room);

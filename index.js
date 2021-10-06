@@ -86,8 +86,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('addIssueStatistic', (props) => {
-    const { finalArr, room } = props;
-    addIssueStat({ finalArr, room });
+    const { finalArr, room, statCards } = props;
+    addIssueStat({ finalArr, room, statCards });
     io.in(room).emit('issues', getIssues(room));
   });
 
