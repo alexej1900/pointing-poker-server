@@ -25,6 +25,23 @@ const deleteIssue = (id) => {
   if (index !== -1) return issues.splice(index, 1)[0];
 };
 
+const addIssueStat = ({ finalArr, room }) => {
+  // console.log(Array(...finalArr));
+  // const currentIssues = getIssues(room);
+  issues.forEach((issue) => {
+    issue.isActive ? (issue.statistic = Array(...finalArr)) : null;
+  });
+  console.log(issues);
+  return issues;
+};
+
 const getIssues = (room) => issues.filter((issue) => issue.room === room);
 
-module.exports = { addIssue, getIssue, deleteIssue, getIssues, updateIssues };
+module.exports = {
+  addIssue,
+  getIssue,
+  deleteIssue,
+  getIssues,
+  updateIssues,
+  addIssueStat
+};
