@@ -213,6 +213,7 @@ io.on('connection', (socket) => {
 
   socket.on('editUser', ({ room, image }) => {
     const user = editUser(socket.id, image);
+    console.log(user);
     io.in(user.room).emit('users', getUsers(user.room));
   });
 });
