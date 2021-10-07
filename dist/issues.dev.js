@@ -15,6 +15,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 var issues = [];
+var newIssues = [];
 
 var addIssue = function addIssue(currentIssue, room) {
   var existingIssue = issues.find(function (issuei) {
@@ -45,15 +46,25 @@ var updateIssues = function updateIssues(currentIssue, room) {
 
 var addIssueStat = function addIssueStat(_ref) {
   var finalArr = _ref.finalArr,
-      room = _ref.room,
       statCards = _ref.statCards;
   var voteNumber = statCards.length;
   issues.forEach(function (issue) {
     if (issue.isActive) {
       issue.statistic = Array.apply(void 0, _toConsumableArray(finalArr));
       issue.votes = voteNumber;
-    } else {
-      issue = issue;
+      newIssues.push(issue);
+    } else if (!issue.isActive) {
+      var idx = newIssues.indexOf(issue);
+
+      if (idx !== -1) {
+        var currentIssue = newIssues[idx];
+        issue.statistic = currentIssue.statistic;
+        issue.votes = currentIssue.votes;
+      } else {
+        newIssues.push(issue);
+        issue.statistic = [];
+        issue.votes = '';
+      }
     }
   });
   return issues;

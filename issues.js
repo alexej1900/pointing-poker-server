@@ -1,5 +1,5 @@
 let issues = [];
-
+const newIssues = [];
 const addIssue = (currentIssue, room) => {
   const existingIssue = issues.find((issuei) => issuei.id === currentIssue.id);
   if (existingIssue) return { error: 'Issue has already been taken' };
@@ -15,14 +15,24 @@ const updateIssues = (currentIssue, room) => {
   });
 };
 
-const addIssueStat = ({ finalArr, room, statCards }) => {
+const addIssueStat = ({ finalArr, statCards }) => {
   const voteNumber = statCards.length;
   issues.forEach((issue) => {
     if (issue.isActive) {
       issue.statistic = Array(...finalArr);
       issue.votes = voteNumber;
-    } else {
-      issue = issue;
+      newIssues.push(issue);
+    } else if (!issue.isActive) {
+      const idx = newIssues.indexOf(issue);
+      if (idx !== -1) {
+        const currentIssue = newIssues[idx];
+        issue.statistic = currentIssue.statistic;
+        issue.votes = currentIssue.votes;
+      } else {
+        newIssues.push(issue);
+        issue.statistic = [];
+        issue.votes = '';
+      }
     }
   });
   return issues;
