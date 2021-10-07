@@ -16,8 +16,6 @@ const updateIssues = (currentIssue, room) => {
 };
 
 const addIssueStat = ({ finalArr, room, statCards }) => {
-  // console.log(Array(...finalArr));
-  // const currentIssues = getIssues(room);
   const voteNumber = statCards.length;
   issues.forEach((issue) => {
     if (issue.isActive) {
