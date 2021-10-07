@@ -15,14 +15,20 @@ const {
   deleteUsers
 } = require('./users');
 const { addRoom, getRoom, deleteRoom, getRooms } = require('./rooms');
-const { addSettings, setSettings, getSettings, setIsGameSetting } = require('./settings');
+const {
+  addSettings,
+  setSettings,
+  getSettings,
+  setIsGameSetting
+} = require('./settings');
 
 const {
   addIssue,
   getIssue,
   deleteIssue,
   getIssues,
-  updateIssues
+  updateIssues,
+  addIssueStat
 } = require('./issues');
 const {
   getTimer,
@@ -79,6 +85,12 @@ io.on('connection', (socket) => {
     callback();
   });
 
+  socket.on('addIssueStatistic', (props) => {
+    const { finalArr, room, statCards } = props;
+    addIssueStat({ finalArr, room, statCards });
+    io.in(room).emit('issues', getIssues(room));
+  });
+
   socket.on('deleteIssue', (id) => {
     const issue = deleteIssue(id);
     if (issue) {
@@ -120,7 +132,7 @@ io.on('connection', (socket) => {
     io.in(room).emit('getSettings', getSettings(room));
   });
 
-  socket.on('getCurrentMemberSettings', ({room, id}) => {
+  socket.on('getCurrentMemberSettings', ({ room, id }) => {
     io.to(id).emit('getMemberSettings', getSettings(room));
   });
 

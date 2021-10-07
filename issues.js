@@ -15,6 +15,21 @@ const updateIssues = (currentIssue, room) => {
   });
 };
 
+const addIssueStat = ({ finalArr, room, statCards }) => {
+  // console.log(Array(...finalArr));
+  // const currentIssues = getIssues(room);
+  const voteNumber = statCards.length;
+  issues.forEach((issue) => {
+    if (issue.isActive) {
+      issue.statistic = Array(...finalArr);
+      issue.votes = voteNumber;
+    } else {
+      issue = issue;
+    }
+  });
+  return issues;
+};
+
 const getIssue = (id) => {
   let issue = issues.find((issue) => issue.id === id);
   return issue;
@@ -27,4 +42,11 @@ const deleteIssue = (id) => {
 
 const getIssues = (room) => issues.filter((issue) => issue.room === room);
 
-module.exports = { addIssue, getIssue, deleteIssue, getIssues, updateIssues };
+module.exports = {
+  addIssue,
+  getIssue,
+  deleteIssue,
+  getIssues,
+  updateIssues,
+  addIssueStat
+};
